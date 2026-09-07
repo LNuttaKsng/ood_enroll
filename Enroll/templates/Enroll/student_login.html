@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>เข้าสู่ระบบนักศึกษา</title>
+</head>
+<body>
+    <h1>เข้าสู่ระบบนักศึกษา</h1>
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <p>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}<span>{{ error }}</span>{% endfor %}
+            </p>
+        {% endfor %}
+        <button type="submit">เข้าสู่ระบบ</button>
+    </form>
+    <p><a href="{% url 'enrollment_list' %}">กลับหน้าหลัก</a></p>
+</body>
+</html>

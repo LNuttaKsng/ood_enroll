@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>รายวิชาที่เปิดให้ลงทะเบียน</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'enrollment_list' %}">หน้าหลัก</a> |
+        <a href="{% url 'student_summary' %}">สรุปการลงทะเบียน</a> |
+        <form method="post" action="{% url 'student_logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit">ออกจากระบบ</button>
+        </form>
+    </nav>
+
+    <h1>รายวิชาที่เปิดให้ลงทะเบียน</h1>
+    <p>นักศึกษา: {{ student.student_id }} | หลักสูตร: {{ student.curriculum }}</p>
+
+    {% if messages %}
+        {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+    {% endif %}
+
+    {% if not student %}
+        <p>บัญชีนี้ยังไม่มีข้อมูลนักศึกษา</p>
+    {% endif %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>รหัสวิชา</th>
+                <th>รายวิชา</th>
+                <th>กลุ่ม</th>
+                <th>หน่วยกิต</th>
+                <th>ที่นั่ง</th>
+                <th>การดำเนินการ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for section in sections %}
+                <tr>
+                    <td>{{ section.offered_course.course.code }}</td>
+                    <td>{{ section.offered_course.course.name }}</td>
+                    <td>{{ section.section_number }}</td>
+                    <td>{{ section.offered_course.course.credits }}</td>
+                    <td>{{ section.current_enrolled }}/{{ section.max_seats }}</td>
+                    <td>
+                        {% if section.id in enrolled_section_ids %}
+                            <form method="post" action="{% url 'drop_section' section.id %}">
+                                {% csrf_token %}
+                                <button type="submit">ถอนรายวิชา</button>
+                            </form>
+                        {% elif section.offered_course.course.id in student_curriculum_course_ids %}
+                            <form method="post" action="{% url 'enroll_section' section.id %}">
+                                {% csrf_token %}
+                                <button type="submit" {% if section.current_enrolled >= section.max_seats %}disabled{% endif %}>ลงทะเบียน</button>
+                            </form>
+                        {% else %}
+                            ไม่อยู่ในหลักสูตร
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">ยังไม่มีรายวิชาที่เปิดให้ลงทะเบียน</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

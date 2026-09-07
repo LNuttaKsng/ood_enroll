@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ระบบลงทะเบียนเรียน</title>
+</head>
+<body>
+    <h1>ระบบลงทะเบียนเรียน</h1>
+    {% if student %}
+        <p>ยินดีต้อนรับ {{ student.user.get_full_name|default:student.user.username }}</p>
+        <p>รหัสนักศึกษา: {{ student.student_id }}</p>
+        <p><a href="{% url 'available_sections' %}">ลงทะเบียนรายวิชา</a></p>
+        <p><a href="{% url 'student_summary' %}">ดูสรุปการลงทะเบียน</a></p>
+        <form method="post" action="{% url 'student_logout' %}">
+            {% csrf_token %}
+            <button type="submit">ออกจากระบบ</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'student_login' %}">เข้าสู่ระบบนักศึกษา</a></p>
+    {% endif %}
+</body>
+</html>

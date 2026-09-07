@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>สรุปการลงทะเบียน</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'enrollment_list' %}">หน้าหลัก</a> |
+        <a href="{% url 'available_sections' %}">กลับไปหน้ารายวิชา</a>
+        <form method="post" action="{% url 'student_logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit">ออกจากระบบ</button>
+        </form>
+    </nav>
+    <h1>สรุปการลงทะเบียน</h1>
+
+    <p>รหัสนักศึกษา: {{ student.student_id }}</p>
+    <p>หลักสูตร: {{ student.curriculum }}</p>
+    <p>หน่วยกิตรวม: {{ total_credits }}</p>
+    <ul>
+        {% for enrollment in enrollments %}
+            <li>
+                {{ enrollment.section.offered_course.course.code }}
+                {{ enrollment.section.offered_course.course.name }}
+                ({{ enrollment.section.offered_course.course.credits }} หน่วยกิต)
+            </li>
+        {% empty %}
+            <li>ยังไม่มีรายวิชาที่ลงทะเบียน</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
